@@ -1,0 +1,4 @@
+node_modules/
+ghostnote.db
+*.log
+.env

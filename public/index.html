@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GhostNote</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div class="brand">
+          <span class="led"></span>
+          <div>
+            <div class="name">GhostNote</div>
+            <div class="tag">zero-knowledge message vault</div>
+          </div>
+        </div>
+        <div class="by">built by K7 Digital</div>
+      </header>
+
+      <section class="card">
+        <div class="row2">
+          <div>
+            <div class="label">SECRET</div>
+            <textarea id="msg" spellcheck="false" placeholder="type your secret..."></textarea>
+          </div>
+          <div>
+            <div class="label">DECOY (optional, stored plaintext)</div>
+            <textarea id="decoy" spellcheck="false" placeholder="decoy shown first..."></textarea>
+          </div>
+        </div>
+
+        <div class="grid">
+          <label class="field">
+            <span>TTL</span>
+            <select id="ttl">
+              <option value="3600">1 hour</option>
+              <option value="86400" selected>24 hours</option>
+              <option value="604800">7 days</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Burn views</span>
+            <input id="views" type="number" min="1" max="100" value="1" />
+          </label>
+
+          <label class="field chk">
+            <input id="ipLock" type="checkbox" />
+            <span>IP lock (advanced)</span>
+          </label>
+
+          <label class="field">
+            <span>Passphrase (optional)</span>
+            <input id="pass" type="password" autocomplete="off" placeholder="if set, required to decrypt" />
+          </label>
+        </div>
+
+        <button id="createBtn" class="btn">CREATE ENCRYPTED NOTE</button>
+
+        <div id="out" class="out" hidden>
+          <div class="label">SHARE LINK (contains key after #)</div>
+          <div class="outRow">
+            <input id="link" readonly />
+            <button id="copyBtn" class="btn2">COPY</button>
+          </div>
+          <div class="warn">
+            Anyone with the full link can decrypt. If you set a passphrase, share it separately.
+          </div>
+        </div>
+
+        <pre id="log" class="log"></pre>
+      </section>
+    </main>
+
+    <script src="/vendor/argon2-bundled.min.js"></script>
+    <script src="/create.bundle.js"></script>
+  </body>
+</html>

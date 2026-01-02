@@ -1,3 +1,11 @@
-# Blank App
+GhostNote (Node.js)
+- Zero-knowledge: server stores only ciphertext JSON, keys stay client-side in URL fragment (#k=...)
+- Client crypto: libsodium-wrappers-sumo -> XChaCha20-Poly1305 + Argon2id (crypto_pwhash)
 
-This is a blank app. See our [app configuration docs](https://docs.replit.com/replit-app/configuration#replit-app-configuration) for more information on how to configure it. Or visit the Dependencies pane to add languages, language packages, and system packages.
+Run (Replit/Local):
+1) Set env var SERVER_SECRET (Replit Secrets recommended)
+2) npm install
+3) npm start
+
+Open:
+- http://localhost:3000/

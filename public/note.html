@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>GhostNote / view</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div class="brand">
+          <span class="led blue"></span>
+          <div>
+            <div class="name">GhostNote</div>
+            <div class="tag">viewer</div>
+          </div>
+        </div>
+        <div class="by">built by K7 Digital</div>
+      </header>
+
+      <section class="card">
+        <pre id="status" class="log"></pre>
+
+        <div id="decoyWrap" hidden>
+          <div class="label">DECOY</div>
+          <pre id="decoyText" class="panel"></pre>
+        </div>
+
+        <div id="passWrap" hidden>
+          <div class="label">PASSPHRASE REQUIRED</div>
+          <input id="pass" type="password" autocomplete="off" placeholder="enter passphrase" />
+        </div>
+
+        <button id="revealBtn" class="btn" hidden>REVEAL SECRET</button>
+
+        <div id="secretWrap" hidden>
+          <div class="label">SECRET</div>
+          <pre id="secretText" class="panel"></pre>
+        </div>
+      </section>
+    </main>
+
+    <script src="/vendor/argon2-bundled.min.js"></script>
+    <script src="/view.bundle.js"></script>
+  </body>
+</html>
