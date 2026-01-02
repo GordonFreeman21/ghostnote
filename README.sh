@@ -1,4 +1,10 @@
-# GhostNote (Node.js) 
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Creates/overwrites README.md in the current directory.
+
+cat > README.md <<'EOF'
+# GhostNote (Node.js) — Neon + Render ready
 
 GhostNote is a zero‑knowledge message vault for anonymous-style sharing: the server stores only encrypted payloads. Decryption happens in the browser.
 
@@ -44,6 +50,3 @@ Example:
 SERVER_SECRET="a-very-long-random-string"
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
 PORT=3000
-```
-
-created by K7 - Digital

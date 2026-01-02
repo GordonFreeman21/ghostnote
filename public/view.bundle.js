@@ -856,7 +856,7 @@
       exports.DIGEST_LENGTH = 16;
       var Poly1305 = (
         /** @class */
-        function() {
+        (function() {
           function Poly13052(key) {
             this.digestLength = exports.DIGEST_LENGTH;
             this._buffer = new Uint8Array(16);
@@ -1232,7 +1232,7 @@
             return this;
           };
           return Poly13052;
-        }()
+        })()
       );
       exports.Poly1305 = Poly1305;
       function oneTimeAuth(key, data) {
@@ -1269,7 +1269,7 @@
       var ZEROS = new Uint8Array(16);
       var ChaCha20Poly1305 = (
         /** @class */
-        function() {
+        (function() {
           function ChaCha20Poly13052(key) {
             this.nonceLength = exports.NONCE_LENGTH;
             this.tagLength = exports.TAG_LENGTH;
@@ -1363,7 +1363,7 @@
             wipe_1.wipe(length);
           };
           return ChaCha20Poly13052;
-        }()
+        })()
       );
       exports.ChaCha20Poly1305 = ChaCha20Poly1305;
     }
@@ -1382,7 +1382,7 @@
       exports.TAG_LENGTH = 16;
       var XChaCha20Poly13052 = (
         /** @class */
-        function() {
+        (function() {
           function XChaCha20Poly13053(key) {
             this.nonceLength = exports.NONCE_LENGTH;
             this.tagLength = exports.TAG_LENGTH;
@@ -1427,7 +1427,7 @@
             return this;
           };
           return XChaCha20Poly13053;
-        }()
+        })()
       );
       exports.XChaCha20Poly1305 = XChaCha20Poly13052;
     }
