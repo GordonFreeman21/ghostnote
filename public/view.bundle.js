@@ -1507,60 +1507,138 @@
   var revealBtn = document.getElementById("revealBtn");
   var secretWrap = document.getElementById("secretWrap");
   var secretText = document.getElementById("secretText");
-  function status(s) {
-    statusEl.textContent = s;
+  var frost = document.getElementById("frost");
+  var badgeLabel = document.querySelector(".badge span:last-child");
+  function status(msg) {
+    if (statusEl) statusEl.textContent = msg;
   }
-  function noteIdFromPath() {
-    const m = location.pathname.match(/^\/n\/([^/]+)$/);
-    return m ? m[1] : null;
+  function show(el) {
+    if (el) el.hidden = false;
+  }
+  function hide(el) {
+    if (el) el.hidden = true;
+  }
+  function noteIdFromUrl() {
+    const u = new URL(location.href);
+    const m = u.pathname.match(/\/n\/([^\/?#]+)/);
+    if (m && m[1]) return m[1];
+    const qs = u.searchParams;
+    return qs.get("id") || qs.get("note") || qs.get("nid") || null;
+  }
+  function renderBadLink(reason) {
+    if (badgeLabel) badgeLabel.textContent = "Invalid link";
+    hide(decoyWrap);
+    hide(passWrap);
+    hide(revealBtn);
+    hide(secretWrap);
+    frost?.classList.remove("isMelted");
+    const msg = `Invalid GhostNote link.
+
+${reason}
+
+Open a real note link like:
+/n/<id>#k=...
+
+Tip: the #k= part is required to decrypt.`;
+    status(msg);
+    const card = document.getElementById("recipientCard") || document.body;
+    if (!document.getElementById("goHomeBtn")) {
+      const a = document.createElement("a");
+      a.id = "goHomeBtn";
+      a.href = "/";
+      a.className = "btn btn--ghost";
+      a.style.display = "inline-flex";
+      a.style.marginTop = "12px";
+      a.textContent = "Go to Composer";
+      card.appendChild(a);
+    }
   }
   async function fetchNote(id) {
-    const res = await fetch(`/api/notes/${encodeURIComponent(id)}`);
+    const res = await fetch(`/api/notes/${encodeURIComponent(id)}`, { method: "GET" });
     if (!res.ok) return null;
     return res.json();
   }
   var payloadObj = null;
   var linkKey = null;
+  var noteId = null;
   async function reveal() {
     try {
+      if (!payloadObj || !linkKey) {
+        status("missing payload/key.");
+        return;
+      }
       const kdf = payloadObj.kdf || null;
       const needsPass = !!(kdf && kdf.name === "argon2id");
-      const passphrase = needsPass ? (passEl.value || "").trim() : "";
-      if (needsPass && !passphrase) return status("passphrase required.");
-      status("deriving key + decrypting locally...");
+      const passphrase = needsPass ? (passEl?.value || "").trim() : "";
+      if (needsPass && !passphrase) {
+        status("passphrase required.");
+        passEl?.focus();
+        return;
+      }
+      frost?.classList.add("isMelted");
+      status("decrypting locally...");
       const masterKey = await deriveMasterKey(linkKey, passphrase, kdf);
       const pt = decryptXChaCha(payloadObj, masterKey);
-      secretWrap.hidden = false;
-      secretText.textContent = pt;
-      passWrap.hidden = true;
-      decoyWrap.hidden = true;
-      revealBtn.hidden = true;
+      show(secretWrap);
+      if (secretText) secretText.textContent = pt;
+      hide(decoyWrap);
+      hide(passWrap);
+      hide(revealBtn);
       status("done.");
     } catch {
       status("decrypt failed (wrong key/passphrase or tampered ciphertext).");
     }
   }
-  (async function main() {
-    const id = noteIdFromPath();
-    if (!id) return status("bad URL");
+  async function main() {
+    noteId = noteIdFromUrl();
+    if (!noteId) {
+      renderBadLink("No note id found in the URL path or query string.");
+      return;
+    }
     linkKey = parseFragmentKey();
-    if (!linkKey) return status("missing #k=... fragment key.");
+    if (!linkKey) {
+      renderBadLink("Missing #k=... fragment key.");
+      return;
+    }
     status("fetching note (burn-on-view happens now)...");
-    const data = await fetchNote(id);
-    if (!data) return status("note not found / expired / burned / IP-locked.");
+    const data = await fetchNote(noteId);
+    if (!data) {
+      status("note not found / expired / burned / IP-locked.");
+      hide(revealBtn);
+      hide(passWrap);
+      hide(decoyWrap);
+      hide(secretWrap);
+      return;
+    }
+    if (data.decoy) {
+      show(decoyWrap);
+      if (decoyText) decoyText.textContent = data.decoy;
+    } else {
+      hide(decoyWrap);
+    }
     try {
       payloadObj = JSON.parse(data.payload);
     } catch {
-      return status("corrupt payload");
-    }
-    if (data.decoy) {
-      decoyWrap.hidden = false;
-      decoyText.textContent = data.decoy;
+      status("corrupt payload.");
+      hide(revealBtn);
+      return;
     }
     const kdf = payloadObj.kdf || null;
-    if (kdf && kdf.name === "argon2id") passWrap.hidden = false;
-    revealBtn.hidden = false;
-    revealBtn.addEventListener("click", reveal);
-    status("ready. click REVEAL SECRET.");
-  })();
+    const needsPass = !!(kdf && kdf.name === "argon2id");
+    if (needsPass) {
+      show(passWrap);
+      passEl?.focus();
+    } else {
+      hide(passWrap);
+    }
+    show(revealBtn);
+    status("ready. click UNLOCK to decrypt locally.");
+    revealBtn?.addEventListener("click", reveal);
+    passEl?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") reveal();
+    });
+  }
+  main().catch(() => {
+    renderBadLink("Viewer crashed.");
+  });
 })();

@@ -1,80 +1,210 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GhostNote</title>
-    <link rel="stylesheet" href="/app.css" />
-  </head>
-  <body>
-    <main class="wrap">
-      <header class="top">
-        <div class="brand">
-          <span class="led"></span>
-          <div>
-            <div class="name">GhostNote</div>
-            <div class="tag">zero-knowledge message vault</div>
-          </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#050505" />
+  <title>GhostNote</title>
+
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <!-- cache-bust while you're developing -->
+  <link rel="stylesheet" href="/app.css?v=2" />
+</head>
+
+<body class="dv">
+  <!-- Splash -->
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash__inner">
+      <img class="splash__logo" src="/favicon.png" alt="K7 Digital logo" />
+      <div class="splash__name">GhostNote</div>
+      <div class="splash__sub">Product from K7 Digital</div>
+
+      <div class="splash__row">
+        <label class="label" for="username">Username (optional)</label>
+        <input id="username" class="input" type="text" autocomplete="off" spellcheck="false" maxlength="24"
+               placeholder="stored locally only" />
+        <div class="micro">Not sent to the server.</div>
+      </div>
+
+      <div class="splash__actions">
+        <button id="splashContinue" class="btn btn--primary" type="button">Continue →</button>
+        <button id="splashSkip" class="btn btn--ghost" type="button">Skip</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Drawer -->
+  <aside id="info" class="info" aria-hidden="true">
+    <div class="info__top">
+      <div class="info__title">Info</div>
+      <button id="infoClose" class="iconBtn" type="button" aria-label="Close info">✕</button>
+    </div>
+    <div class="info__body">
+      <div class="info__block">
+        <div class="info__h">What is K7 Digital?</div>
+        <p>
+          K7 Digital is a one‑man (anonymous) coding group — basically just me.
+          I build privacy‑utility tools: small apps that feel fast, simple, and honest about security.
+        </p>
+        <p>
+          I’m not trying to be a “big company”. I’m a developer in Germany shipping projects,
+          learning in public, and improving them based on real feedback.
+        </p>
+        <p>
+          The goal: tools that respect privacy by default — no accounts, no trackers,
+          no unnecessary data collection.
+        </p>
+      </div>
+
+      <div class="info__block">
+        <div class="info__h">Zero‑knowledge</div>
+        <p>
+          Encrypt/decrypt happens locally in your browser. The server stores ciphertext only.
+          The key is in the URL fragment (<code>#k=…</code>), which is not sent to the server.
+        </p>
+      </div>
+
+      <div class="info__block">
+        <div class="info__h">Reality check</div>
+        <ul>
+          <li>If someone gets the full link (including <code>#k=…</code>), they can decrypt.</li>
+          <li>Passphrase mode helps if you think the link might be forwarded.</li>
+          <li>Burn-on-read is best-effort. People can still screenshot/copy.</li>
+        </ul>
+      </div>
+    </div>
+      <div class="info__block">
+        <div class="info__h">Reality check</div>
+        <ul>
+          <li>If someone gets the full link (including <code>#k=…</code>), they can decrypt.</li>
+          <li>Passphrase mode helps if you think the link might be forwarded.</li>
+          <li>Burn-on-read is best-effort. People can still screenshot/copy.</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <div class="page">
+    <header class="top">
+      <div class="brand" aria-label="GhostNote">
+        <span class="ghostIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path
+              d="M12 3c-4.2 0-7.6 3.4-7.6 7.6V20c0 .6.7 1 1.2.6l1.7-1.3c.3-.2.7-.2 1 0l1.3 1c.3.2.7.2 1 0l1.3-1c.3-.2.7-.2 1 0l1.3 1c.3.2.7.2 1 0l1.3-1c.3-.2.7-.2 1 0l1.7 1.3c.5.4 1.2 0 1.2-.6v-9.4C19.6 6.4 16.2 3 12 3Z"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+            />
+            <path d="M9.2 11.2h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M14.8 11.2h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__word">GhostNote</span>
+      </div>
+
+      <div class="top__right">
+        <div class="badge" title="Client-side encryption status">
+          <span class="badge__dot" aria-hidden="true"></span>
+          <span>Client‑Side Encryption Active</span>
         </div>
-        <div class="by">built by K7 Digital</div>
-      </header>
+        <button id="infoOpen" class="iconBtn" type="button" aria-label="Open info">i</button>
+      </div>
+    </header>
 
-      <section class="card">
-        <div class="row2">
-          <div>
-            <div class="label">SECRET</div>
-            <textarea id="msg" spellcheck="false" placeholder="type your secret..."></textarea>
+    <main class="stage">
+      <section class="glass">
+        <div class="glass__border" aria-hidden="true"></div>
+
+        <div class="card">
+          <div class="card__top">
+            <div class="card__title">Vault</div>
+            <span id="helloUser" class="pill" hidden></span>
           </div>
-          <div>
-            <div class="label">DECOY (optional, stored plaintext)</div>
-            <textarea id="decoy" spellcheck="false" placeholder="decoy shown first..."></textarea>
+
+          <div class="vault" id="vaultBox">
+            <div id="noiseOverlay" class="noiseOverlay" aria-hidden="true"></div>
+            <pre id="cipherOverlay" class="cipherOverlay" aria-hidden="true"></pre>
+
+            <!-- REQUIRED by your create bundle -->
+            <textarea id="msg" class="textarea" spellcheck="false"
+              placeholder="Write your secret here. It will be encrypted before it leaves your device..."></textarea>
           </div>
+
+          <div class="controls">
+            <div class="ctrl">
+              <label class="toggle">
+                <input id="burnOnRead" type="checkbox" />
+                <span class="toggle__track" aria-hidden="true"></span>
+                <span>Burn on Read</span>
+              </label>
+              <div id="burnWarn" class="warn" hidden>Alert: burn-on-read enabled.</div>
+
+              <!-- REQUIRED by your create bundle -->
+              <input id="views" type="number" min="1" max="100" value="1" hidden />
+            </div>
+
+            <div class="ctrl">
+              <label class="toggle">
+                <input id="passToggle" type="checkbox" />
+                <span class="toggle__track" aria-hidden="true"></span>
+                <span>Passphrase Protection</span>
+              </label>
+              <div id="passWrap" class="slide" hidden>
+                <!-- REQUIRED by your create bundle -->
+                <input id="pass" class="input" type="password" autocomplete="off" placeholder="Set passphrase (optional)" />
+              </div>
+            </div>
+
+            <div class="ctrl">
+              <label class="label" for="ttl">Expiration</label>
+              <!-- REQUIRED by your create bundle -->
+              <select id="ttl" class="select">
+                <option value="3600">1 Hour</option>
+                <option value="86400" selected>24 Hours</option>
+                <option value="604800">7 Days</option>
+              </select>
+
+              <label class="toggle toggle--small" style="margin-top:10px;">
+                <!-- REQUIRED by your create bundle -->
+                <input id="ipLock" type="checkbox" />
+                <span class="toggle__track" aria-hidden="true"></span>
+                <span>IP lock (advanced)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="label" for="decoy">Decoy (optional)</label>
+            <!-- REQUIRED by your create bundle -->
+            <textarea id="decoy" class="textarea textarea--small" spellcheck="false" placeholder="Decoy shown first..."></textarea>
+          </div>
+
+          <!-- REQUIRED by your create bundle -->
+          <button id="createBtn" class="cta" type="button">ENCRYPT &amp; CREATE GHOST</button>
+
+          <!-- REQUIRED output -->
+          <div id="out" class="out" hidden>
+            <div class="label">Share Link</div>
+            <div class="out__row">
+              <input id="link" class="input" readonly />
+              <button id="copyBtn" class="btn btn--ghost" type="button">Copy</button>
+            </div>
+            <div class="micro">If you set a passphrase, share it separately.</div>
+          </div>
+
+          <!-- REQUIRED -->
+          <pre id="log" class="log"></pre>
         </div>
-
-        <div class="grid">
-          <label class="field">
-            <span>TTL</span>
-            <select id="ttl">
-              <option value="3600">1 hour</option>
-              <option value="86400" selected>24 hours</option>
-              <option value="604800">7 days</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Burn views</span>
-            <input id="views" type="number" min="1" max="100" value="1" />
-          </label>
-
-          <label class="field chk">
-            <input id="ipLock" type="checkbox" />
-            <span>IP lock (advanced)</span>
-          </label>
-
-          <label class="field">
-            <span>Passphrase (optional)</span>
-            <input id="pass" type="password" autocomplete="off" placeholder="if set, required to decrypt" />
-          </label>
-        </div>
-
-        <button id="createBtn" class="btn">CREATE ENCRYPTED NOTE</button>
-
-        <div id="out" class="out" hidden>
-          <div class="label">SHARE LINK (contains key after #)</div>
-          <div class="outRow">
-            <input id="link" readonly />
-            <button id="copyBtn" class="btn2">COPY</button>
-          </div>
-          <div class="warn">
-            Anyone with the full link can decrypt. If you set a passphrase, share it separately.
-          </div>
-        </div>
-
-        <pre id="log" class="log"></pre>
       </section>
     </main>
 
-    <script src="/vendor/argon2-bundled.min.js"></script>
-    <script src="/create.bundle.js"></script>
-  </body>
+    <footer class="foot">
+      <span>Zero‑Knowledge Architecture. Server sees only blobs.</span>
+      <span class="foot__right">Built by K7 Digital</span>
+    </footer>
+  </div>
+
+  <!-- scripts (absolute paths so they work on /n/<id>) -->
+  <script src="/vendor/argon2-bundled.min.js"></script>
+  <script src="/ui.js?v=2"></script>
+  <script src="/create.bundle.js?v=2"></script>
+</body>
 </html>

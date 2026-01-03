@@ -1,47 +1,78 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GhostNote / view</title>
-    <link rel="stylesheet" href="/app.css" />
-  </head>
-  <body>
-    <main class="wrap">
-      <header class="top">
-        <div class="brand">
-          <span class="led blue"></span>
-          <div>
-            <div class="name">GhostNote</div>
-            <div class="tag">viewer</div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#050505" />
+  <title>GhostNote / Viewer</title>
+
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/app.css?v=2" />
+</head>
+
+<body class="dv">
+  <div class="page">
+    <header class="top">
+      <div class="brand" aria-label="GhostNote">
+        <span class="ghostIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path
+              d="M12 3c-4.2 0-7.6 3.4-7.6 7.6V20c0 .6.7 1 1.2.6l1.7-1.3c.3-.2.7-.2 1 0l1.3 1c.3.2.7.2 1 0l1.3-1c.3-.2.7-.2 1 0l1.3 1c.3.2.7.2 1 0l1.3-1c.3-.2.7-.2 1 0l1.7 1.3c.5.4 1.2 0 1.2-.6v-9.4C19.6 6.4 16.2 3 12 3Z"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+            />
+            <path d="M9.2 11.2h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M14.8 11.2h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__word">GhostNote</span>
+      </div>
+
+      <div class="top__right">
+        <div class="badge">
+          <span class="badge__dot badge__dot--cyan" aria-hidden="true"></span>
+          <span>Viewer</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="stage">
+      <section class="glass">
+        <div class="glass__border" aria-hidden="true"></div>
+
+        <div class="card card--recipient" id="recipientCard">
+          <div class="frost" id="frost" aria-hidden="true"></div>
+
+          <!-- REQUIRED by your view bundle -->
+          <pre id="status" class="log log--top"></pre>
+
+          <div id="decoyWrap" hidden>
+            <div class="label">Decoy</div>
+            <pre id="decoyText" class="panel"></pre>
           </div>
-        </div>
-        <div class="by">built by K7 Digital</div>
-      </header>
 
-      <section class="card">
-        <pre id="status" class="log"></pre>
+          <div id="passWrap" hidden>
+            <div class="label">Passphrase required</div>
+            <input id="pass" class="input" type="password" autocomplete="off" placeholder="Enter passphrase" />
+          </div>
 
-        <div id="decoyWrap" hidden>
-          <div class="label">DECOY</div>
-          <pre id="decoyText" class="panel"></pre>
-        </div>
+          <button id="revealBtn" class="cta" hidden type="button">UNLOCK</button>
 
-        <div id="passWrap" hidden>
-          <div class="label">PASSPHRASE REQUIRED</div>
-          <input id="pass" type="password" autocomplete="off" placeholder="enter passphrase" />
-        </div>
-
-        <button id="revealBtn" class="btn" hidden>REVEAL SECRET</button>
-
-        <div id="secretWrap" hidden>
-          <div class="label">SECRET</div>
-          <pre id="secretText" class="panel"></pre>
+          <div id="secretWrap" hidden>
+            <div class="label">Secret</div>
+            <pre id="secretText" class="panel"></pre>
+          </div>
         </div>
       </section>
     </main>
 
-    <script src="/vendor/argon2-bundled.min.js"></script>
-    <script src="/view.bundle.js"></script>
-  </body>
+    <footer class="foot">
+      <span>Decrypt happens locally in your browser.</span>
+      <span class="foot__right">Built by K7 Digital</span>
+    </footer>
+  </div>
+
+  <script src="/vendor/argon2-bundled.min.js"></script>
+  <script src="/ui.js?v=2"></script>
+  <script src="/view.bundle.js?v=2"></script>
+</body>
 </html>
